@@ -10,4 +10,309 @@
 body {
   min-height: 100vh;
   font-family: sans-serif;
+  background-color: #f5f5f5;
+  color: #333333;
 }
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Шапка */
+.header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 0;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  background-color: #d9d9d9;
+  color: #555555;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 8px 18px;
+  border-radius: 4px;
+}
+
+.nav {
+  display: flex;
+  gap: 24px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #555555;
+  font-size: 14px;
+}
+
+.btn-login {
+  background-color: #3d3d3d;
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Основная область */
+.main {
+  flex: 1;
+  padding-top: 28px;
+  padding-bottom: 40px;
+}
+
+/* Индикатор шагов */
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e5e5;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 12px;
+}
+
+.step:last-child {
+  flex: 0;
+}
+
+.step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #bdbdbd;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.step.active .step-circle {
+  background-color: #3d3d3d;
+}
+
+.step-line {
+  height: 2px;
+  background-color: #dcdcdc;
+  flex: 1;
+  margin-right: 12px;
+}
+
+.step.active .step-line {
+  background-color: #3d3d3d;
+}
+
+/* Заголовок */
+.title-block {
+  margin-bottom: 24px;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: #666666;
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2b2b2b;
+}
+
+/* Сетка календаря и времени */
+.booking-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+/* Календарь */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.month-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.month-arrow {
+  background-color: #efefef;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 18px;
+  color: #333333;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #777777;
+  margin-bottom: 12px;
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  justify-items: center;
+}
+
+.day {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #333333;
+}
+
+.day.disabled {
+  background-color: transparent;
+  color: #bbbbbb;
+}
+
+.day.selected {
+  background-color: #3d3d3d;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.day.today {
+  border: 1.5px solid #3d3d3d;
+  background-color: #ffffff;
+}
+
+/* Слоты времени */
+.card-subtitle {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.time-slot {
+  padding: 12px 10px;
+  border-radius: 6px;
+  border: 1px solid #dcdcdc;
+  background-color: #f7f7f7;
+  font-size: 14px;
+  color: #333333;
+  text-align: center;
+}
+
+.time-slot.selected {
+  background-color: #3d3d3d;
+  color: #ffffff;
+  border-color: #3d3d3d;
+  font-weight: 600;
+}
+
+.time-slot.busy {
+  background-color: #eeeeee;
+  color: #a0a0a0;
+  border-color: #e5e5e5;
+  text-decoration: line-through;
+}
+
+/* Нижняя панель с кнопкой Далее */
+.bottom-bar {
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.summary-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.btn-next {
+  background-color: #3d3d3d;
+  color: #ffffff;
+  border: none;
+  padding: 12px 36px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Подвал */
+.footer {
+  background-color: #333333;
+  color: #cccccc;
+  padding: 32px 0;
+  font-size: 13px;
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 24px;
+}
+
+.footer-logo {
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.footer-col p {
+  margin-bottom: 8px;
+};

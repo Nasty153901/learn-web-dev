@@ -1,26 +1,149 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Выбор даты и времени</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <!--
-      ЗАДАНИЕ
-      ========
-      Сверстать страницу выбора даты и времени по своему макету.
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Выбор даты и времени</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="container header-inner">
+        <div class="logo">LOGO</div>
+        <nav class="nav">
+          <a href="#" class="nav-link">Услуги</a>
+          <a href="#" class="nav-link">Мастера</a>
+          <a href="#" class="nav-link">Отзывы</a>
+          <a href="#" class="nav-link">Контакты</a>
+        </nav>
+        <button class="btn-login">Войти</button>
+      </div>
+    </header>
 
-      Пока это только вёрстка. Никакого JavaScript — ни кликов,
-      ни переходов, ни выбора дня. Всё статично.
+    <main class="main container">
+      <div class="steps">
+        <div class="step done">
+          <span class="step-circle">1</span>
+          <span class="step-line"></span>
+        </div>
+        <div class="step done">
+          <span class="step-circle">2</span>
+          <span class="step-line"></span>
+        </div>
+        <div class="step active">
+          <span class="step-circle">3</span>
+          <span class="step-line"></span>
+        </div>
+      </div>
 
-      Стили пишите в styles.css. Разметку — здесь.
-    -->
+      <div class="title-block">
+        <button class="btn-back">← Назад</button>
+        <h1 class="page-title">Выберите дату и время</h1>
+      </div>
 
-    <div class="page">
-      <!-- Начните отсюда. Разметьте шапку, основную область
-           с календарём и слотами, подвал. -->
-    </div>
-  </body>
-</html>
+      <div class="booking-grid">
+        <section class="card calendar-card">
+          <div class="calendar-header">
+            <button class="month-arrow">‹</button>
+            <span class="month-title">Ноябрь 2026</span>
+            <button class="month-arrow">›</button>
+          </div>
+
+          <div class="weekdays">
+            <span>Пн</span>
+            <span>Вт</span>
+            <span>Ср</span>
+            <span>Чт</span>
+            <span>Пт</span>
+            <span>Сб</span>
+            <span>Вс</span>
+          </div>
+
+          <div class="days-grid">
+            <span class="day disabled">26</span>
+            <span class="day disabled">27</span>
+            <span class="day disabled">28</span>
+            <span class="day disabled">29</span>
+            <span class="day disabled">30</span>
+            <span class="day disabled">31</span>
+            <span class="day">1</span>
+
+            <span class="day">2</span>
+            <span class="day">3</span>
+            <span class="day">4</span>
+            <span class="day">5</span>
+            <span class="day">6</span>
+            <span class="day">7</span>
+            <span class="day">8</span>
+
+            <span class="day">9</span>
+            <span class="day">10</span>
+            <span class="day">11</span>
+            <span class="day">12</span>
+            <span class="day selected">13</span>
+            <span class="day">14</span>
+            <span class="day">15</span>
+
+            <span class="day">16</span>
+            <span class="day">17</span>
+            <span class="day">18</span>
+            <span class="day">19</span>
+            <span class="day">20</span>
+            <span class="day">21</span>
+            <span class="day today">22</span>
+
+            <span class="day">23</span>
+            <span class="day">24</span>
+            <span class="day">25</span>
+            <span class="day">26</span>
+            <span class="day">27</span>
+            <span class="day">28</span>
+            <span class="day">29</span>
+          </div>
+        </section>
+
+        <section class="card time-card">
+          <h2 class="card-subtitle">Доступное время</h2>
+          <div class="time-grid">
+            <button class="time-slot">10:00</button>
+            <button class="time-slot busy" disabled>11:00 (занято)</button>
+            <button class="time-slot">12:00</button>
+            <button class="time-slot busy" disabled>13:00 (занято)</button>
+            <button class="time-slot">14:00</button>
+            <button class="time-slot">15:00</button>
+            <button class="time-slot selected">16:00</button>
+            <button class="time-slot">17:00</button>
+            <button class="time-slot">18:00</button>
+            <button class="time
+            slot busy" disabled>19:00 (занято)</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="bottom-bar">
+        <div class="summary-text">Выбрано: 13 ноября, 16:00</div>
+        <button class="btn-next">Далее</button>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div class="footer-col">
+          <div class="logo footer-logo">LOGO</div>
+          <p class="footer-desc">Барбершоп и студия стрижек. Онлайн-запись 24/7.</p>
+        </div>
+        <div class="footer-col">
+          <p>Услуги</p>
+          <p>Мастера</p>
+          <p>Отзывы</p>
+        </div>
+        <div class="footer-col">
+          <p>+7 (999) 000-00-00</p>
+          <p>Ежедневно с 10:00 до 21:00</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>-
