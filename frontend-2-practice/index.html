@@ -1,14 +1,67 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Выбор даты и времени</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="page">
-      <!-- Перенесите вашу верстку. Удалите статичные данные. Подключите скрипт -->
-    </div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Выбор даты и времени</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="container header-inner">
+        <div class="logo">LOGO</div>
+        <nav class="nav">
+          <a href="#">Услуги</a>
+          <a href="#">Мастера</a>
+          <a href="#">Отзывы</a>
+        </nav>
+        <button class="btn-dark">Войти</button>
+      </div>
+    </header>
+
+    <main class="main container">
+      <div class="steps">
+        <span class="step done">1. Услуга</span>
+        <span class="step done">2. Мастер</span>
+        <span class="step active">3. Дата и время</span>
+        <span class="step">4. Контакты</span>
+      </div>
+
+      <h1 class="title">Выберите дату и время</h1>
+
+      <div class="grid">
+        <section class="card">
+          <div class="cal-top">
+            <button id="prev-btn" type="button">‹</button>
+            <span id="month-label"></span>
+            <button id="next-btn" type="button">›</button>
+          </div>
+
+          <div class="weekdays">
+            <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+          </div>
+
+          <div class="days" id="days-box"></div>
+        </section>
+
+        <section class="card">
+          <h2 class="subtitle">Доступное время</h2>
+          <div class="slots" id="slots-box"></div>
+        </section>
+      </div>
+
+      <div class="bottom-bar">
+        <div id="result-text">Выбрано: ...</div>
+        <button class="btn-dark" type="button">Далее</button>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">LOGO — Барбершоп © 2026</div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>
