@@ -47,13 +47,262 @@
 //
 // Ниже — пустой каркас. Здесь можно начать писать.
 
-function App() {
+import { useState, useEffect } from 'react';
+
+const MONTHS_NOMINATIVE = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+const MONTHS_GENITIVE = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+const DAYS_OF_WEEK = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+const WEEKDAYS_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+
+export default function App() {
+  const [today, setToday] = useState(null);
+  const [todayLoading, setTodayLoading] = useState(true);
+  const [todayError, setTodayError] = useState('');
+
+  const [currentMonth, setCurrentMonth] = useState(0);
+  const [currentYear, setCurrentYear] = useState(2026);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedTime, setSelectedTime] = useState('');
+
+  const [slots, setSlots] = useState([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+  const [slotsError, setSlotsError] = useState('');
+
+  // 1. Загрузка «сегодня» при открытии страницы
+  useEffect(() => {
+    let ignore = false;
+    setTodayLoading(true);
+    setTodayError('');
+
+    fetch('/api/booking/today')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Ошибка сервера при загрузке календаря');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (ignore) return;
+        const todayObj = { day: data.day, month: data.month, year: data.year };
+        setToday(todayObj);
+        setCurrentMonth(data.month);
+        setCurrentYear(data.year);
+        setSelectedDay(todayObj);
+        setTodayLoading(false);
+      })
+      .catch((err) => {
+        if (ignore) return;
+        setTodayError(err.message || 'Не удалось загрузить календарь');
+        setTodayLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  // 2. Загрузка слотов при смене выбранного дня (с защитой от гонок)
+  useEffect(() => {
+    if (!selectedDay) return;
+
+    let ignore = false;
+    const { day, month, year } = selectedDay;
+
+    setSlotsLoading(true);
+    setSlotsError('');
+    setSelectedTime('');
+
+    fetch(`/api/slots?day=${day}&month=${month}&year=${year}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Ошибка сервера при загрузке слотов');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (ignore) return;
+        setSlots(data.slots || []);
+        setSlotsLoading(false);
+      })
+      .catch((err) => {
+        if (ignore) return;
+        setSlotsError(err.message || 'Не удалось загрузить слоты');
+        setSlotsLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [selectedDay]);
+
+  const handlePrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+  };
+
+  const renderMainContent = () => {
+    if (todayLoading) {
+      return <div className="status-box">Загрузка...</div>;
+    }
+
+    if (todayError || !today || !selectedDay) {
+      return <div className="status-box error">{todayError || 'Ошибка загрузки данных'}</div>;
+    }
+
+    const todayDate = new Date(today.year, today.month, today.day);
+    const selectedDateObj = new Date(selectedDay.year, selectedDay.month, selectedDay.day);
+
+    let firstDay = new Date(currentYear, currentMonth, 1).getDay() - 1;
+    if (firstDay < 0) firstDay = 6;
+    const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    const cells = [];
+    for (let i = 0; i < firstDay; i++) {
+      cells.push({ type: 'empty', key: `e-${i}` });
+    }
+    for (let d = 1; d <= totalDays; d++) {
+      const cellDate = new Date(currentYear, currentMonth, d);
+      const isPast = cellDate <dayDate;
+      const isSelected =
+        selectedDay.day === d &&
+        selectedDay.month === currentMonth &&
+        selectedDay.year === currentYear;
+
+      cells.push({
+        type: 'day',
+        key: `d-${d}`,
+        day: d,
+        isPast,
+        isSelected,
+      });
+    }
+
+    const dayName = DAYS_OF_WEEK[selectedDateObj.getDay()];
+    const monthName = MONTHS_GENITIVE[selectedDay.month];
+
+    return (
+      <>
+        <div className="grid">
+          <section className="card">
+            <div className="cal-top">
+              <button type="button" onClick={handlePrevMonth}>‹</button>
+              <span>{MONTHS_NOMINATIVE[currentMonth]} {currentYear}</span>
+              <button type="button" onClick={handleNextMonth}>›</button>
+            </div>
+
+            <div className="weekdays">
+              {WEEKDAYS_SHORT.map((w) => (
+                <span key={w}>{w}</span>
+              ))}
+            </div>
+
+            <div className="days">
+              {cells.map((cell) => {
+                if (cell.type === 'empty') {
+                  return <span key={cell.key} className="day empty" />;
+                }
+                const cls = cell.isPast ? 'day disabled' : cell.isSelected ? 'day selected' : 'day';
+                return (
+                  <button
+                    key={cell.key}
+                    type="button"
+                    className={cls}
+                    disabled={cell.isPast}
+                    onClick={() =>
+                      setSelectedDay({ day: cell.day, month: currentMonth, year: currentYear })
+                    }
+                  >
+                    {cell.day}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="card">
+            <h2 className="subtitle">Доступное время</h2>
+
+            {slotsLoading && <div className="status-box">Загрузка слотов...</div>}
+            {!slotsLoading && slotsError && <div className="status-box error">{slotsError}</div>}
+
+            {!slotsLoading && !slotsError && (
+              <div className="slots">
+                {slots.map((slot) => {
+                  const isBusy = !slot.available;
+                  const isSelected = slot.time === selectedTime;
+                  const cls = isBusy ? 'slot busy' : isSelected ? 'slot selected' : 'slot';
+
+                  return (
+                    <button
+                      key={slot.time}
+                      type="button"
+                      className={cls}
+                      disabled={isBusy}
+                      onClick={() => setSelectedTime(slot.time)}
+                    >
+                      {slot.time}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </div>
+
+        <div className="bottom-bar">
+          <div>
+            Выбрано: {dayName}, {selectedDay.day} {monthName} {selectedDay.year}
+            {selectedTime ? `, ${selectedTime}` : ''}
+          </div>
+          <button className="btn-dark" type="button">Далее</button>
+        </div>
+      </>
+    );
+  };
+
   return (
-    <div>
-      {/* Начните отсюда. Например, разметьте .page, добавьте шапку,
-            основную область, подвал. */}
+    <div className="page">
+      <header className="header">
+        <div className="container header-inner">
+          <div className="logo">LOGO</div>
+          <nav className="nav">
+            <a href="#">Услуги</a>
+            <a href="#">Мастера</a>
+            <a href="#">Отзывы</a>
+          </nav>
+          <button className="btn-dark" type="button">Войти</button>
+        </div>
+      </header>
+
+      <main className="main container">
+        <div className="steps">
+          <span className="step">1. Услуга</span>
+          <span className="step">2. Мастер</span>
+          <span className="step active">3. Дата и время</span>
+          <span className="step">4. Контакты</span>
+        </div>
+
+        <h1 className="title">Выберите дату и время</h1>
+
+        {renderMainContent()}
+      </main>
+
+      <footer className="footer">
+        <div className="container">LOGO — Барбершоп © 2026</div>
+      </footer>
     </div>
   );
-}
-
-export default App;
+} 
