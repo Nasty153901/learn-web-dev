@@ -48,6 +48,7 @@
 // Ниже — пустой каркас. Здесь можно начать писать.
 
 import { useState, useEffect } from 'react';
+import { fetchToday, fetchSlots } from './api.js';
 
 const MONTHS_NOMINATIVE = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 const MONTHS_GENITIVE = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
@@ -68,19 +69,12 @@ export default function App() {
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [slotsError, setSlotsError] = useState('');
 
-  // 1. Загрузка «сегодня» при открытии страницы
   useEffect(() => {
     let ignore = false;
     setTodayLoading(true);
     setTodayError('');
 
-    fetch('/api/booking/today')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Ошибка сервера при загрузке календаря');
-        }
-        return response.json();
-      })
+    fetchToday()
       .then((data) => {
         if (ignore) return;
         const todayObj = { day: data.day, month: data.month, year: data.year };
@@ -101,7 +95,6 @@ export default function App() {
     };
   }, []);
 
-  // 2. Загрузка слотов при смене выбранного дня (с защитой от гонок)
   useEffect(() => {
     if (!selectedDay) return;
 
@@ -112,13 +105,7 @@ export default function App() {
     setSlotsError('');
     setSelectedTime('');
 
-    fetch(`/api/slots?day=${day}&month=${month}&year=${year}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Ошибка сервера при загрузке слотов');
-        }
-        return response.json();
-      })
+    fetchSlots(day, month, year)
       .then((data) => {
         if (ignore) return;
         setSlots(data.slots || []);
@@ -142,6 +129,9 @@ export default function App() {
     } else {
       setCurrentMonth(currentMonth - 1);
     }
+    setSelectedDay(null);
+    setSelectedTime('');
+    setSlots([]);
   };
 
   const handleNextMonth = () => {
@@ -151,19 +141,26 @@ export default function App() {
     } else {
       setCurrentMonth(currentMonth + 1);
     }
+    setSelectedDay(null);
+    setSelectedTime('');
+    setSlots([]);
   };
 
+  const handleNextStep = () => {
+    if (!selectedDay || !selectedTime) return;
+    const monthName = MONTHS_GENITIVE[selectedDay.month];
+    alert(`Вы записаны на ${selectedDay.day} ${monthName} ${selectedDay.year} в ${selectedTime}`);
+  };
   const renderMainContent = () => {
     if (todayLoading) {
       return <div className="status-box">Загрузка...</div>;
     }
 
-    if (todayError || !today || !selectedDay) {
+    if (todayError || !today) {
       return <div className="status-box error">{todayError || 'Ошибка загрузки данных'}</div>;
     }
 
     const todayDate = new Date(today.year, today.month, today.day);
-    const selectedDateObj = new Date(selectedDay.year, selectedDay.month, selectedDay.day);
 
     let firstDay = new Date(currentYear, currentMonth, 1).getDay() - 1;
     if (firstDay < 0) firstDay = 6;
@@ -175,8 +172,9 @@ export default function App() {
     }
     for (let d = 1; d <= totalDays; d++) {
       const cellDate = new Date(currentYear, currentMonth, d);
-      const isPast = cellDate <dayDate;
+      const isPast = cellDate < todayDate;
       const isSelected =
+        Boolean(selectedDay) &&
         selectedDay.day === d &&
         selectedDay.month === currentMonth &&
         selectedDay.year === currentYear;
@@ -190,8 +188,15 @@ export default function App() {
       });
     }
 
-    const dayName = DAYS_OF_WEEK[selectedDateObj.getDay()];
-    const monthName = MONTHS_GENITIVE[selectedDay.month];
+    let summaryText = 'Выберите дату и время';
+    if (selectedDay) {
+      const selectedDateObj = new Date(selectedDay.year, selectedDay.month, selectedDay.day);
+      const dayName = DAYS_OF_WEEK[selectedDateObj.getDay()];
+      const monthName = MONTHS_GENITIVE[selectedDay.month];
+      summaryText = `Выбрано: ${dayName}, ${selectedDay.day} ${monthName} ${selectedDay.year}${selectedTime ? `, ${selectedTime}` : ''}`;
+    }
+
+    const isNextDisabled = !selectedDay || !selectedTime;
 
     return (
       <>
@@ -235,10 +240,11 @@ export default function App() {
           <section className="card">
             <h2 className="subtitle">Доступное время</h2>
 
-            {slotsLoading && <div className="status-box">Загрузка слотов...</div>}
-            {!slotsLoading && slotsError && <div className="status-box error">{slotsError}</div>}
+            {!selectedDay && <div className="status-box">Сначала выберите дату в календаре</div>}
+            {selectedDay && slotsLoading && <div className="status-box">Загрузка слотов...</div>}
+            {selectedDay && !slotsLoading && slotsError && <div className="status-box error">{slotsError}</div>}
 
-            {!slotsLoading && !slotsError && (
+            {selectedDay && !slotsLoading && !slotsError && (
               <div className="slots">
                 {slots.map((slot) => {
                   const isBusy = !slot.available;
@@ -257,17 +263,21 @@ export default function App() {
                     </button>
                   );
                 })}
-              </div>
+                </div>
             )}
           </section>
         </div>
 
         <div className="bottom-bar">
-          <div>
-            Выбрано: {dayName}, {selectedDay.day} {monthName} {selectedDay.year}
-            {selectedTime ? `, ${selectedTime}` : ''}
-          </div>
-          <button className="btn-dark" type="button">Далее</button>
+          <div>{summaryText}</div>
+          <button
+            className="btn-dark"
+            type="button"
+            disabled={isNextDisabled}
+            onClick={handleNextStep}
+          >
+            Далее
+          </button>
         </div>
       </>
     );
@@ -305,4 +315,4 @@ export default function App() {
       </footer>
     </div>
   );
-} 
+}
